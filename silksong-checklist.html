@@ -43,15 +43,24 @@
             </div>
 
             <!-- Filters and Controls -->
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
+            <div class="row g-2 mb-3 align-items-start">
+                <div class="col-auto" style="width: 50px;">
+                    <div class="form-check form-switch" style="padding-top: 8px;">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="hideCompleted"
+                               x-model="hideCompleted"
+                               title="Hide Completed Items">
+                    </div>
+                </div>
+                <div class="col">
                     <input type="text"
-                           class="form-control"
-                           placeholder="Search..."
+                           class="form-control form-control-sm"
+                           placeholder="Search name or description..."
                            x-model="searchQuery">
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select" x-model="filterType">
+                <div class="col-auto" style="width: 140px;">
+                    <select class="form-select form-select-sm" x-model="filterType">
                         <option value="">All Types</option>
                         <option value="Boss">Bosses</option>
                         <option value="Mini-Boss">Mini-Bosses</option>
@@ -64,30 +73,19 @@
                         <option value="Mister Mushroom">Mister Mushroom</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select" x-model="filterLocation">
+                <div class="col-auto" style="width: 160px;">
+                    <select class="form-select form-select-sm" x-model="filterLocation">
                         <option value="">All Locations</option>
                         <template x-for="location in uniqueLocations" :key="location">
                             <option :value="location" x-text="location"></option>
                         </template>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <div class="form-check form-switch" style="padding-top: 8px;">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               id="hideCompleted"
-                               x-model="hideCompleted">
-                        <label class="form-check-label" for="hideCompleted">
-                            Hide Completed
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
+                <div class="col-auto" style="width: 180px;">
                     <div class="btn-group w-100" role="group">
-                        <button class="btn btn-success btn-sm" @click="exportData()">Export JSON</button>
-                        <button class="btn btn-info btn-sm" @click="$refs.importFile.click()">Import JSON</button>
-                        <button class="btn btn-warning btn-sm" @click="resetAll()">Reset All</button>
+                        <button class="btn btn-success btn-sm" @click="exportData()">Export</button>
+                        <button class="btn btn-info btn-sm" @click="$refs.importFile.click()">Import</button>
+                        <button class="btn btn-warning btn-sm" @click="resetAll()">Reset</button>
                     </div>
                     <input type="file"
                            x-ref="importFile"
@@ -107,13 +105,13 @@
                         <th @click="sortBy('name')">
                             Name <span x-show="sortField === 'name'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
+                        <th>Description</th>
                         <th @click="sortBy('type')">
                             Type <span x-show="sortField === 'type'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
                         <th @click="sortBy('location')">
                             Location <span x-show="sortField === 'location'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
-                        <th>Description</th>
                         <th style="width: 120px;">Links</th>
                     </tr>
                 </thead>
@@ -127,9 +125,9 @@
                                        @change="toggleItem(item.id, $event.target.checked)">
                             </td>
                             <td x-text="item.name"></td>
+                            <td x-text="item.description"></td>
                             <td><span class="badge bg-secondary" x-text="item.type"></span></td>
                             <td x-text="item.location"></td>
-                            <td x-text="item.description"></td>
                             <td>
                                 <a :href="item.wikiUrl" target="_blank" class="btn btn-sm btn-outline-primary me-1">Wiki</a>
                                 <a :href="item.mapUrl" target="_blank" class="btn btn-sm btn-outline-info">Map</a>
