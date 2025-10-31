@@ -44,7 +44,7 @@
                 display: none !important;
             }
             .desktop-filters {
-                display: flex !important;
+                display: block !important;
             }
             .mobile-filters {
                 display: none !important;
@@ -129,7 +129,7 @@
                            placeholder="Search..."
                            x-model="searchQuery">
                 </div>
-                <div class="row g-2">
+                <div class="row g-2 mb-2">
                     <div class="col-6">
                         <select class="form-select" x-model="filterType">
                             <option value="">All Types</option>
@@ -153,7 +153,33 @@
                         </select>
                     </div>
                 </div>
-                <div class="mt-2">
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <select class="form-select" x-model="filterAct">
+                            <option value="">All Acts</option>
+                            <template x-for="act in uniqueActs" :key="act">
+                                <option :value="act" x-text="act"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                            <div class="fw-bold mb-1" style="font-size: 0.875rem;">Abilities I Have:</div>
+                            <template x-for="prereq in uniquePrerequisites" :key="prereq">
+                                <div class="form-check" style="font-size: 0.875rem;">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           :id="'mobile-prereq-' + prereq"
+                                           :value="prereq"
+                                           x-model="filterPrerequisites"
+                                           @change="saveToLocalStorage()">
+                                    <label class="form-check-label" :for="'mobile-prereq-' + prereq" x-text="prereq"></label>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div>
                     <div class="btn-group w-100" role="group">
                         <button class="btn btn-success btn-sm" @click="exportData()">Export</button>
                         <button class="btn btn-info btn-sm" @click="$refs.importFile.click()">Import</button>
@@ -168,55 +194,81 @@
             </div>
 
             <!-- Desktop Filters -->
-            <div class="desktop-filters row g-2 mb-3 align-items-start">
-                <div class="col-auto" style="width: 50px;">
-                    <div class="form-check form-switch" style="padding-top: 8px;">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               id="hideCompleted"
-                               x-model="hideCompleted"
-                               title="Hide Completed Items">
+            <div class="desktop-filters mb-3">
+                <div class="d-flex gap-2 mb-2">
+                    <div style="width: 50px;">
+                        <div class="form-check form-switch" style="padding-top: 8px;">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="hideCompleted"
+                                   x-model="hideCompleted"
+                                   title="Hide Completed Items">
+                        </div>
                     </div>
-                </div>
-                <div class="col">
-                    <input type="text"
-                           class="form-control form-control-sm"
-                           placeholder="Search name or description..."
-                           x-model="searchQuery">
-                </div>
-                <div class="col-auto" style="width: 140px;">
-                    <select class="form-select form-select-sm" x-model="filterType">
-                        <option value="">All Types</option>
-                        <option value="Boss">Bosses</option>
-                        <option value="Mini-Boss">Mini-Bosses</option>
-                        <option value="Red Tool">Red Tools</option>
-                        <option value="Blue Tool">Blue Tools</option>
-                        <option value="Yellow Tool">Yellow Tools</option>
-                        <option value="Silk Skill">Silk Skills</option>
-                        <option value="Crest">Crests</option>
-                        <option value="Lost Flea">Lost Fleas</option>
-                        <option value="Mister Mushroom">Mister Mushroom</option>
-                    </select>
-                </div>
-                <div class="col-auto" style="width: 160px;">
-                    <select class="form-select form-select-sm" x-model="filterLocation">
-                        <option value="">All Locations</option>
-                        <template x-for="location in uniqueLocations" :key="location">
-                            <option :value="location" x-text="location"></option>
-                        </template>
-                    </select>
-                </div>
-                <div class="col-auto" style="width: 180px;">
-                    <div class="btn-group w-100" role="group">
-                        <button class="btn btn-success btn-sm" @click="exportData()">Export</button>
-                        <button class="btn btn-info btn-sm" @click="$refs.importFile.click()">Import</button>
-                        <button class="btn btn-warning btn-sm" @click="resetAll()">Reset</button>
+                    <div style="flex: 1;">
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               placeholder="Search name or description..."
+                               x-model="searchQuery">
                     </div>
-                    <input type="file"
-                           x-ref="importFile"
-                           @change="importData($event)"
-                           accept=".json"
-                           style="display: none;">
+                    <div style="width: 130px;">
+                        <select class="form-select form-select-sm" x-model="filterType">
+                            <option value="">All Types</option>
+                            <option value="Boss">Bosses</option>
+                            <option value="Mini-Boss">Mini-Bosses</option>
+                            <option value="Red Tool">Red Tools</option>
+                            <option value="Blue Tool">Blue Tools</option>
+                            <option value="Yellow Tool">Yellow Tools</option>
+                            <option value="Silk Skill">Silk Skills</option>
+                            <option value="Crest">Crests</option>
+                            <option value="Lost Flea">Lost Fleas</option>
+                            <option value="Mister Mushroom">Mister Mushroom</option>
+                        </select>
+                    </div>
+                    <div style="width: 170px;">
+                        <select class="form-select form-select-sm" x-model="filterLocation">
+                            <option value="">All Locations</option>
+                            <template x-for="location in uniqueLocations" :key="location">
+                                <option :value="location" x-text="location"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div style="width: 100px;">
+                        <select class="form-select form-select-sm" x-model="filterAct">
+                            <option value="">All Acts</option>
+                            <template x-for="act in uniqueActs" :key="act">
+                                <option :value="act" x-text="act"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div style="width: 180px;">
+                        <div class="border rounded p-2" style="max-height: 120px; overflow-y: auto; background: white;">
+                            <div class="fw-bold mb-1" style="font-size: 0.75rem;">Abilities I Have:</div>
+                            <template x-for="prereq in uniquePrerequisites" :key="prereq">
+                                <div class="form-check" style="font-size: 0.75rem;">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           :id="'desktop-prereq-' + prereq"
+                                           :value="prereq"
+                                           x-model="filterPrerequisites"
+                                           @change="saveToLocalStorage()">
+                                    <label class="form-check-label" :for="'desktop-prereq-' + prereq" x-text="prereq"></label>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div style="width: 180px;">
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-success btn-sm" @click="exportData()">Export</button>
+                            <button class="btn btn-info btn-sm" @click="$refs.importFile.click()">Import</button>
+                            <button class="btn btn-warning btn-sm" @click="resetAll()">Reset</button>
+                        </div>
+                        <input type="file"
+                               x-ref="importFile"
+                               @change="importData($event)"
+                               accept=".json"
+                               style="display: none;">
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,13 +283,17 @@
                             Name <span x-show="sortField === 'name'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
                         <th>Description</th>
-                        <th @click="sortBy('type')">
+                        <th style="width: 130px;" @click="sortBy('type')">
                             Type <span x-show="sortField === 'type'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
-                        <th @click="sortBy('location')">
+                        <th style="width: 170px;" @click="sortBy('location')">
                             Location <span x-show="sortField === 'location'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
                         </th>
-                        <th style="width: 120px;">Links</th>
+                        <th style="width: 100px;" @click="sortBy('act')">
+                            Act <span x-show="sortField === 'act'" x-text="sortDirection === 'asc' ? '↑' : '↓'"></span>
+                        </th>
+                        <th style="width: 180px;">Prerequisites</th>
+                        <th style="width: 180px;">Links</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -253,6 +309,8 @@
                             <td x-text="item.description"></td>
                             <td><span class="badge bg-secondary" x-text="item.type"></span></td>
                             <td x-text="item.location"></td>
+                            <td x-text="item.act"></td>
+                            <td x-text="item.prerequisites ? item.prerequisites.join(', ') : ''"></td>
                             <td>
                                 <a :href="item.wikiUrl" target="_blank" class="btn btn-sm btn-outline-primary me-1">Wiki</a>
                                 <a :href="item.mapUrl" target="_blank" class="btn btn-sm btn-outline-info">Map</a>
@@ -278,6 +336,8 @@
                             <div class="mobile-card-body">
                                 <div><span class="badge bg-secondary" x-text="item.type"></span></div>
                                 <div class="mt-1"><strong>Location:</strong> <span x-text="item.location"></span></div>
+                                <div class="mt-1"><strong>Act:</strong> <span x-text="item.act"></span></div>
+                                <div class="mt-1" x-show="item.prerequisites && item.prerequisites.length"><strong>Prerequisites:</strong> <span x-text="item.prerequisites.join(', ')"></span></div>
                                 <div class="mt-1" x-show="item.description" x-text="item.description"></div>
                             </div>
                         </div>
@@ -297,189 +357,31 @@
                 searchQuery: '',
                 filterType: '',
                 filterLocation: '',
+                filterAct: '',
+                filterPrerequisites: [],
                 hideCompleted: false,
                 sortField: 'type',
                 sortDirection: 'asc',
-                items: [
-                    // Bosses (48 total)
-                    { id: 1, name: 'Widow', type: 'Boss', location: 'Bellhart', description: '', completed: false },
-                    { id: 2, name: 'Groal The Great', type: 'Boss', location: 'Bilewater', description: '', completed: false },
-                    { id: 3, name: 'Phantom', type: 'Boss', location: 'Bilewater', description: '', completed: false },
-                    { id: 4, name: 'Great Conchflies', type: 'Boss', location: 'Blasted Steps', description: '', completed: false },
-                    { id: 5, name: 'Last Judge', type: 'Boss', location: 'Blasted Steps', description: '', completed: false },
-                    { id: 6, name: 'Lost Garmond', type: 'Boss', location: 'Blasted Steps', description: '', completed: false },
-                    { id: 7, name: 'Cogwork Dancers', type: 'Boss', location: 'Cogwork Core', description: '', completed: false },
-                    { id: 8, name: 'Forebrothers Signis and Gron', type: 'Boss', location: 'Deep Docks', description: '', completed: false },
-                    { id: 9, name: 'Lace', type: 'Boss', location: 'Deep Docks', description: '', completed: false },
-                    { id: 10, name: 'Fourth Chorus', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-                    { id: 11, name: 'Gurr the Outcast', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-                    { id: 12, name: 'Lost Skarrgard', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-                    { id: 13, name: 'Savage Beastfly', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-                    { id: 14, name: 'Skarrsinger Karmelita', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-                    { id: 15, name: 'Crawfather', type: 'Boss', location: 'Greymoor', description: '', completed: false },
-                    { id: 16, name: 'Moorwing', type: 'Boss', location: 'Greymoor', description: '', completed: false },
-                    { id: 17, name: 'Shakra', type: 'Boss', location: 'Greymoor', description: '', completed: false },
-                    { id: 18, name: 'Second Sentinel', type: 'Boss', location: 'High Halls', description: '', completed: false },
-                    { id: 19, name: 'Lost Moss Mother', type: 'Boss', location: 'Moss Grotto', description: '', completed: false },
-                    { id: 20, name: 'Moss Mother', type: 'Boss', location: 'Moss Grotto', description: '', completed: false },
-                    { id: 21, name: 'Summoned Saviour', type: 'Boss', location: 'Moss Grotto', description: 'Steel Soul Mode only', completed: false },
-                    { id: 22, name: 'Pinstress', type: 'Boss', location: 'Mount Fay', description: '', completed: false },
-                    { id: 23, name: 'Crust King Khann', type: 'Boss', location: 'Sands of Karak', description: '', completed: false },
-                    { id: 24, name: 'Raging Conchfly', type: 'Boss', location: 'Sands of Karak', description: '', completed: false },
-                    { id: 25, name: 'Voltvyrm', type: 'Boss', location: 'Sands of Karak', description: '', completed: false },
-                    { id: 26, name: 'Watcher at the Edge', type: 'Boss', location: 'Sands of Karak', description: '', completed: false },
-                    { id: 27, name: 'Nyleth', type: 'Boss', location: 'Shellwood', description: '', completed: false },
-                    { id: 28, name: 'Seth', type: 'Boss', location: 'Shellwood', description: '', completed: false },
-                    { id: 29, name: 'Sister Splinter', type: 'Boss', location: 'Shellwood', description: '', completed: false },
-                    { id: 30, name: 'Disgraced Chef Lugoli', type: 'Boss', location: "Sinner's Road", description: '', completed: false },
-                    { id: 31, name: 'Lost Lace', type: 'Boss', location: 'The Abyss', description: '', completed: false },
-                    { id: 32, name: 'Grand Mother Silk', type: 'Boss', location: 'The Cradle', description: '', completed: false },
-                    { id: 33, name: 'Lace', type: 'Boss', location: 'The Cradle', description: '', completed: false },
-                    { id: 34, name: 'Bell Beast', type: 'Boss', location: 'The Marrow', description: '', completed: false },
-                    { id: 35, name: 'Skarrgard', type: 'Boss', location: 'The Marrow', description: '', completed: false },
-                    { id: 36, name: 'Skull Tyrant', type: 'Boss', location: 'The Marrow', description: '', completed: false },
-                    { id: 37, name: 'Broodmother', type: 'Boss', location: 'The Slab', description: '', completed: false },
-                    { id: 38, name: 'First Sinner', type: 'Boss', location: 'The Slab', description: '', completed: false },
-                    { id: 39, name: 'Clover Dancers', type: 'Boss', location: 'Verdania', description: '', completed: false },
-                    { id: 40, name: 'Palestag', type: 'Boss', location: 'Verdania', description: '', completed: false },
-                    { id: 41, name: 'Garmond and Zaza', type: 'Boss', location: 'Whispering Vaults', description: '', completed: false },
-                    { id: 42, name: 'Tormented Trobbio', type: 'Boss', location: 'Whispering Vaults', description: '', completed: false },
-                    { id: 43, name: 'Trobbio', type: 'Boss', location: 'Whispering Vaults', description: '', completed: false },
-                    { id: 44, name: 'Father of the Flame', type: 'Boss', location: 'Wisp Thicket', description: '', completed: false },
-                    { id: 45, name: 'The Unravelled', type: 'Boss', location: 'Whiteward', description: '', completed: false },
-                    { id: 46, name: 'Plasmified Zango', type: 'Boss', location: 'Wormways', description: '', completed: false },
-                    { id: 47, name: 'Rhinogrund', type: 'Boss', location: 'Far Fields', description: '', completed: false },
-
-                    // Mini-Bosses (4)
-                    { id: 48, name: 'Choir Clapper', type: 'Mini-Boss', location: 'High Halls', description: '', completed: false },
-                    { id: 49, name: 'Craggler', type: 'Mini-Boss', location: 'Wormways', description: '', completed: false },
-                    { id: 50, name: 'Rhinogrund', type: 'Mini-Boss', location: 'Memorium', description: '', completed: false },
-                    { id: 51, name: 'Skarrgard', type: 'Mini-Boss', location: 'The Marrow', description: '', completed: false },
-
-                    // Red Tools (22)
-                    { id: 52, name: 'Straight Pin', type: 'Red Tool', location: 'The Marrow', description: 'Prison cell east of area', completed: false },
-                    { id: 53, name: 'Threefold Pin', type: 'Red Tool', location: 'Greymoor', description: 'Guarded by Tallcraw in Craw Lake', completed: false },
-                    { id: 54, name: 'Sting Shard', type: 'Red Tool', location: 'Deep Docks', description: 'Purchase from Forge Daughter (140 Rosaries + Craftmetal)', completed: false },
-                    { id: 55, name: 'Curveclaw', type: 'Red Tool', location: "Hunter's March", description: 'Buy from Mottled Skarr (140 Rosaries)', completed: false },
-                    { id: 56, name: 'Longpin', type: 'Red Tool', location: 'Bellhart', description: 'Destroy Wood Wasp nest on right side', completed: false },
-                    { id: 57, name: 'Tacks', type: 'Red Tool', location: "Sinner's Road", description: 'Reward for Roach Guts wish', completed: false },
-                    { id: 58, name: 'Curvesickle', type: 'Red Tool', location: 'Far Fields', description: 'Give Curveclaw to Skarr Scout (Act 3)', completed: false },
-                    { id: 59, name: 'Throwing Ring', type: 'Red Tool', location: 'Bilewater', description: "Complete Trail's End wish", completed: false },
-                    { id: 60, name: 'Pimpillo', type: 'Red Tool', location: 'Greymoor', description: 'Requires Cling Grip, craft at table', completed: false },
-                    { id: 61, name: 'Silkshot (Twelfth Architect)', type: 'Red Tool', location: 'Underworks', description: 'Repair Ruined Tool (130 Rosaries + Craftmetal)', completed: false },
-                    { id: 62, name: 'Silkshot (Forge Daughter)', type: 'Red Tool', location: 'Deep Docks', description: 'Repair Ruined Tool (240 Rosaries + Craftmetal)', completed: false },
-                    { id: 63, name: 'Conchcutter', type: 'Red Tool', location: 'Sands of Karak', description: 'Coral Tower - end of east path', completed: false },
-                    { id: 64, name: 'Silkshot', type: 'Red Tool', location: 'Mount Fay', description: 'Repair at peak (1 Craftmetal)', completed: false },
-                    { id: 65, name: "Delver's Drill", type: 'Red Tool', location: 'Underworks', description: 'Hazardous tunnel near bench', completed: false },
-                    { id: 66, name: 'Cogwork Wheel', type: 'Red Tool', location: 'Underworks', description: 'Buy from Twelfth Architect (360 Rosaries + Craftmetal)', completed: false },
-                    { id: 67, name: 'Snare Setter', type: 'Red Tool', location: 'Moss Grotto', description: 'Secret room (requires Faydown Cloak, Cling Grip)', completed: false },
-                    { id: 68, name: 'Flintslate', type: 'Red Tool', location: 'Deep Docks', description: 'Passage east of Forge Daughter', completed: false },
-                    { id: 69, name: 'Cogfly', type: 'Red Tool', location: 'High Halls', description: 'Craft at table (1 Craftmetal)', completed: false },
-                    { id: 70, name: 'Needle Phial', type: 'Red Tool', location: 'Wormways', description: 'From Alchemist Zylotol quest', completed: false },
-                    { id: 71, name: 'Flea Brew', type: 'Red Tool', location: 'Greymoor', description: 'Reward from Grishkin (Lost Fleas quest)', completed: false },
-                    { id: 72, name: 'Plasmium Phial', type: 'Red Tool', location: 'Wormways', description: "Complete Alchemist's Assistant wish", completed: false },
-                    { id: 73, name: 'Voltvessels', type: 'Red Tool', location: 'Memorium', description: 'Secret room with colored glass', completed: false },
-                    { id: 74, name: 'Rosary Cannon', type: 'Red Tool', location: 'High Halls', description: 'Destroy ceiling lever', completed: false },
-
-                    // Blue Tools (23)
-                    { id: 75, name: "Druid's Eye", type: 'Blue Tool', location: 'Mosshome', description: 'Complete Berry Picking quest', completed: false },
-                    { id: 76, name: "Druid's Eyes", type: 'Blue Tool', location: 'Mosshome', description: 'Give 4 more Mossberries to Moss Druid', completed: false },
-                    { id: 77, name: 'Magma Bell', type: 'Blue Tool', location: 'Deep Docks', description: 'Buy from Forge Daughter (110 Rosaries + Craftmetal)', completed: false },
-                    { id: 78, name: 'Fractured Mask', type: 'Blue Tool', location: "Hunter's March", description: 'Buy from Mottled Skarr (260 Rosaries)', completed: false },
-                    { id: 79, name: 'Pollip Pouch', type: 'Blue Tool', location: 'Shellwood', description: 'Complete Rite of the Pollip quest', completed: false },
-                    { id: 80, name: 'Warding Bell', type: 'Blue Tool', location: 'Far Fields', description: "Secret passage (requires Drifter's Cloak)", completed: false },
-                    { id: 81, name: 'Multibinder', type: 'Blue Tool', location: 'Bellhart', description: 'Buy from Frey (880 Rosaries, Act 2+)', completed: false },
-                    { id: 82, name: 'Weavelight', type: 'Blue Tool', location: 'Weavenest Atla', description: 'Drops after defeating Moss Mother', completed: false },
-                    { id: 83, name: 'Sawtooth Circlet', type: 'Blue Tool', location: 'Underworks', description: 'Buy from Twelfth Architect (230 Rosaries)', completed: false },
-                    { id: 84, name: 'Reserve Bind', type: 'Blue Tool', location: 'High Halls', description: 'Defeat Second Sentinel', completed: false },
-                    { id: 85, name: 'Spool Extender', type: 'Blue Tool', location: 'Choral Chambers', description: 'Buy from Jubilana (720 Rosaries)', completed: false },
-                    { id: 86, name: 'Injector Band', type: 'Blue Tool', location: 'Whiteward', description: 'Found on shelf near Sherma', completed: false },
-                    { id: 87, name: 'Claw Mirror', type: 'Blue Tool', location: 'Whispering Vaults', description: 'Defeat Trobbio at The Stage', completed: false },
-                    { id: 88, name: 'Claw Mirrors', type: 'Blue Tool', location: 'Whispering Vaults', description: 'Combine Claw Mirror + Dark Mirror (Act 3)', completed: false },
-                    { id: 89, name: 'Memory Crystal', type: 'Blue Tool', location: 'Mount Fay', description: 'Break ice shards, find in wide room', completed: false },
-                    { id: 90, name: 'Quick Sling', type: 'Blue Tool', location: 'Bilewater', description: "Secret area above Shakra's room", completed: false },
-                    { id: 91, name: 'Volt Filament', type: 'Blue Tool', location: 'Sands of Karak', description: 'Defeat Voltvyrm boss', completed: false },
-                    { id: 92, name: 'Snitch Pick', type: 'Blue Tool', location: 'Blasted Steps', description: 'Buy from Grindle (740 Rosaries, Act 3)', completed: false },
-                    { id: 93, name: 'Wreath of Purity', type: 'Blue Tool', location: 'Putrified Ducts', description: 'Hidden passage east section', completed: false },
-                    { id: 94, name: 'Longclaw', type: 'Blue Tool', location: 'Bilewater', description: 'Complete Broodfeast wish in Putrified Ducts', completed: false },
-                    { id: 95, name: 'Wispfire Lantern', type: 'Blue Tool', location: 'Underworks', description: 'Defeat Father of Flame boss', completed: false },
-                    { id: 96, name: 'Pin Badge', type: 'Blue Tool', location: 'Mount Fay', description: 'Defeat Pinstress boss', completed: false },
-                    { id: 97, name: 'Egg of Flealia', type: 'Blue Tool', location: 'Fleatopia', description: 'Collect all 29 Lost Fleas', completed: false },
-
-                    // Yellow Tools (13)
-                    { id: 98, name: 'Compass', type: 'Yellow Tool', location: 'The Marrow', description: 'Buy from Shakra (70 Rosaries)', completed: false },
-                    { id: 99, name: 'Shard Pendant', type: 'Yellow Tool', location: 'The Marrow', description: 'Room left of collapsing platforms', completed: false },
-                    { id: 100, name: 'Magnetite Brooch', type: 'Yellow Tool', location: 'Bone Bottom', description: 'Buy from Pebb (120 Rosaries)', completed: false },
-                    { id: 101, name: "Dead Bug's Purse", type: 'Yellow Tool', location: 'Wormways', description: 'Found in dead bug body', completed: false },
-                    { id: 102, name: 'Barbed Bracelet', type: 'Yellow Tool', location: "Sinner's Road", description: 'Lowest section, southeast platform', completed: false },
-                    { id: 103, name: 'Weighted Belt', type: 'Yellow Tool', location: 'Far Fields', description: "Buy from Mort (160 Rosaries, Pilgrim's Rest)", completed: false },
-                    { id: 104, name: 'Shell Satchel', type: 'Yellow Tool', location: 'Bellhart', description: 'Buy from Frey (520 Rosaries)', completed: false },
-                    { id: 105, name: 'Magnetite Dice', type: 'Yellow Tool', location: 'Bone Bottom', description: 'Buy from Pebb (80 Rosaries)', completed: false },
-                    { id: 106, name: 'Scuttlebrace', type: 'Yellow Tool', location: 'Wormways', description: 'Purchase location', completed: false },
-                    { id: 107, name: 'Silkspeed Anklets', type: 'Yellow Tool', location: 'The Marrow', description: 'Purchase from Shakra', completed: false },
-                    { id: 108, name: 'Spider Strings', type: 'Yellow Tool', location: 'Greymoor', description: 'Location unlocked later', completed: false },
-                    { id: 109, name: "Ascendant's Grip", type: 'Yellow Tool', location: 'Shellwood', description: 'Purchase from merchant', completed: false },
-                    { id: 110, name: "Thief's Mark", type: 'Yellow Tool', location: "Sinner's Road", description: 'Purchase location', completed: false },
-
-                    // Silk Skills (6)
-                    { id: 111, name: 'Silkspear', type: 'Silk Skill', location: 'Mosshome', description: 'Top of large room outside Moss Druid cave', completed: false },
-                    { id: 112, name: 'Thread Storm', type: 'Silk Skill', location: 'Greymoor', description: 'Halfway Home area - ascend chains with balloons', completed: false },
-                    { id: 113, name: 'Cross Stitch', type: 'Silk Skill', location: 'Exhaust Organ', description: 'Defeat Phantom boss', completed: false },
-                    { id: 114, name: 'Sharpdart', type: 'Silk Skill', location: 'Wormways', description: 'Requires Needolin and Clawline', completed: false },
-                    { id: 115, name: 'Rune Rage', type: 'Silk Skill', location: 'The Slab', description: 'Defeat First Sinner', completed: false },
-                    { id: 116, name: 'Pale Nails', type: 'Silk Skill', location: 'The Cradle', description: 'Defeat Grand Mother Silk, bind her arm (Act 3)', completed: false },
-
-                    // Crests (6) - Hunter Crest excluded as starting item
-                    { id: 117, name: 'Reaper Crest', type: 'Crest', location: 'Greymoor', description: 'Chapel of the Reaper - far left section', completed: false },
-                    { id: 118, name: 'Wanderer Crest', type: 'Crest', location: 'Far Fields', description: 'Chapel of the Wanderer', completed: false },
-                    { id: 119, name: 'Beast Crest', type: 'Crest', location: "Hunter's March", description: 'Chapel of the Beast', completed: false },
-                    { id: 120, name: 'Witch Crest', type: 'Crest', location: 'Greymoor', description: 'Chapel of the Witch', completed: false },
-                    { id: 121, name: 'Architect Crest', type: 'Crest', location: 'Underworks', description: 'Chapel of the Architect', completed: false },
-                    { id: 122, name: 'Shaman Crest', type: 'Crest', location: 'Moss Grotto', description: 'Ruined Chapel - break through walls', completed: false },
-
-                    // Lost Fleas (29)
-                    { id: 124, name: 'Lost Flea #1', type: 'Lost Flea', location: 'The Marrow', description: 'Top of vertical chamber after accepting quest', completed: false },
-                    { id: 125, name: 'Lost Flea #2', type: 'Lost Flea', location: "Hunter's March", description: 'Vertical section with red bud flowers', completed: false },
-                    { id: 126, name: 'Lost Flea #3', type: 'Lost Flea', location: 'Deep Docks', description: 'Secret chamber with lava', completed: false },
-                    { id: 127, name: 'Lost Flea #4', type: 'Lost Flea', location: 'Deep Docks', description: 'Northeast of first bench', completed: false },
-                    { id: 128, name: 'Lost Flea #5', type: 'Lost Flea', location: 'Deep Docks', description: 'Requires Clawline', completed: false },
-                    { id: 129, name: 'Lost Flea #6', type: 'Lost Flea', location: 'Far Fields', description: 'Behind cracked wall in secret room', completed: false },
-                    { id: 130, name: 'Lost Flea #7', type: 'Lost Flea', location: 'Far Fields', description: "Requires Drifter's Cloak and Cling Grip", completed: false },
-                    { id: 131, name: 'Lost Flea #8', type: 'Lost Flea', location: 'Craw Lake', description: 'Narrow platforms in upper right area', completed: false },
-                    { id: 132, name: 'Lost Flea #9', type: 'Lost Flea', location: 'Greymoor', description: 'Top of tower in observation niche', completed: false },
-                    { id: 133, name: 'Lost Flea #10', type: 'Lost Flea', location: 'Bellhart', description: 'Behind cracked wall via bouncing off blue bells', completed: false },
-                    { id: 134, name: 'Lost Flea #11', type: 'Lost Flea', location: 'Bilewater', description: 'Hidden area in Exhaust Organ', completed: false },
-                    { id: 135, name: 'Lost Flea #12', type: 'Lost Flea', location: 'Blasted Steps', description: 'On ledge beside stone pillar (requires Faydown Cloak)', completed: false },
-                    { id: 136, name: 'Lost Flea #13', type: 'Lost Flea', location: 'Choral Chambers', description: 'Citadel area, requires multiple abilities', completed: false },
-                    { id: 137, name: 'Lost Flea #14', type: 'Lost Flea', location: 'Choral Chambers', description: 'Citadel area, second location', completed: false },
-                    { id: 138, name: 'Lost Flea #15', type: 'Lost Flea', location: 'Memorium', description: 'Huge Flea requiring combat at top', completed: false },
-                    { id: 139, name: 'Lost Flea #16', type: 'Lost Flea', location: 'Mount Fay', description: 'Accessible by climbing left wall', completed: false },
-                    { id: 140, name: 'Lost Flea #17', type: 'Lost Flea', location: 'Sands of Karak', description: 'After parkour sequences and enemies', completed: false },
-                    { id: 141, name: 'Lost Flea #18', type: 'Lost Flea', location: 'Shellwood', description: 'Trapped in vines at far bottom-right', completed: false },
-                    { id: 142, name: 'Lost Flea #19', type: 'Lost Flea', location: "Sinner's Road", description: 'Behind hanging cages in secret path', completed: false },
-                    { id: 143, name: 'Lost Flea #20', type: 'Lost Flea', location: 'Songclave', description: 'Through Whispering Vaults, complex platforming', completed: false },
-                    { id: 144, name: 'Lost Flea #21', type: 'Lost Flea', location: 'The Slab', description: 'In round entrance', completed: false },
-                    { id: 145, name: 'Lost Flea #22', type: 'Lost Flea', location: 'The Slab', description: 'Near Bellway Bench', completed: false },
-                    { id: 146, name: 'Lost Flea #23', type: 'Lost Flea', location: 'Underworks', description: 'The Cauldron area, lava floor platform', completed: false },
-                    { id: 147, name: 'Lost Flea #24', type: 'Lost Flea', location: 'Whispering Vaults', description: 'Requires manipulating moving cube platforms', completed: false },
-                    { id: 148, name: 'Lost Flea #25', type: 'Lost Flea', location: 'Wisp Thicket', description: 'Trapped in cement at peak, multiple abilities', completed: false },
-                    { id: 149, name: 'Lost Flea #26', type: 'Lost Flea', location: 'Wormways', description: 'Requires breaking wall and defeating enemy', completed: false },
-                    { id: 150, name: 'Lost Flea #27', type: 'Lost Flea', location: 'Putrified Ducts', description: 'Vog in Pale Lake, requires vine climbing', completed: false },
-                    { id: 151, name: 'Lost Flea #28', type: 'Lost Flea', location: 'Bilewater', description: 'Additional location in area', completed: false },
-                    { id: 152, name: 'Lost Flea #29', type: 'Lost Flea', location: 'Bilewater', description: 'Additional location in area', completed: false },
-
-                    // Mister Mushroom (7)
-                    { id: 153, name: 'Mister Mushroom #1', type: 'Mister Mushroom', location: 'Moss Grotto', description: 'Initial location, start Passing of the Age quest', completed: false },
-                    { id: 154, name: 'Mister Mushroom #2', type: 'Mister Mushroom', location: 'Bone Bottom', description: 'Requires Needolin to draw out', completed: false },
-                    { id: 155, name: 'Mister Mushroom #3', type: 'Mister Mushroom', location: 'Far Fields', description: 'Requires Needolin to draw out', completed: false },
-                    { id: 156, name: 'Mister Mushroom #4', type: 'Mister Mushroom', location: 'Greymoor', description: 'Requires Needolin to draw out', completed: false },
-                    { id: 157, name: 'Mister Mushroom #5', type: 'Mister Mushroom', location: 'The Slab', description: 'Requires Needolin to draw out', completed: false },
-                    { id: 158, name: 'Mister Mushroom #6', type: 'Mister Mushroom', location: 'Mount Fay', description: 'Requires Silk Soar, Cling Grip, Clawline', completed: false },
-                    { id: 159, name: 'Mister Mushroom #7', type: 'Mister Mushroom', location: 'The Cradle', description: 'Requires Silk Soar, Cling Grip, Clawline', completed: false },
-                ],
+                items: [{"id":1,"name":"Widow","type":"Boss","location":"Bellhart","description":"","act":"Act 1","prerequisites":["Drifter's Cloak"]},{"id":2,"name":"Groal The Great","type":"Boss","location":"Bilewater","description":"","act":"Acts 2-3","prerequisites":[]},{"id":3,"name":"Phantom","type":"Boss","location":"Bilewater","description":"","act":"Act 1","prerequisites":["Needolin"]},{"id":4,"name":"Great Conchflies","type":"Boss","location":"Blasted Steps","description":"","act":"Act 2","prerequisites":[]},{"id":5,"name":"Last Judge","type":"Boss","location":"Blasted Steps","description":"","act":"Act 1","prerequisites":[]},{"id":6,"name":"Lost Garmond","type":"Boss","location":"Blasted Steps","description":"","act":"Act 3","prerequisites":[]},{"id":7,"name":"Cogwork Dancers","type":"Boss","location":"Cogwork Core","description":"","act":"Act 2","prerequisites":[]},{"id":8,"name":"Forebrothers Signis and Gron","type":"Boss","location":"Deep Docks","description":"","act":"Act 2","prerequisites":[]},{"id":9,"name":"Lace","type":"Boss","location":"Deep Docks","description":"","act":"Acts 1-2","prerequisites":[]},{"id":10,"name":"Fourth Chorus","type":"Boss","location":"Far Fields","description":"","act":"Act 1","prerequisites":["Drifter's Cloak"]},{"id":11,"name":"Gurr the Outcast","type":"Boss","location":"Far Fields","description":"","act":"Act 3","prerequisites":["Clawline","Faydown Cloak"]},{"id":12,"name":"Lost Skarrgard","type":"Boss","location":"Far Fields","description":"","act":"Act 3","prerequisites":[]},{"id":13,"name":"Savage Beastfly","type":"Boss","location":"Far Fields","description":"","act":"Act 1","prerequisites":[]},{"id":14,"name":"Skarrsinger Karmelita","type":"Boss","location":"Far Fields","description":"","act":"Act 3","prerequisites":["Silk Soar"]},{"id":15,"name":"Crawfather","type":"Boss","location":"Greymoor","description":"","act":"","prerequisites":[]},{"id":16,"name":"Moorwing","type":"Boss","location":"Greymoor","description":"","act":"Acts 1-2","prerequisites":[]},{"id":17,"name":"Shakra","type":"Boss","location":"Greymoor","description":"","act":"Acts 1-2","prerequisites":[]},{"id":18,"name":"Second Sentinel","type":"Boss","location":"High Halls","description":"","act":"Act 3","prerequisites":[]},{"id":19,"name":"Lost Moss Mother","type":"Boss","location":"Moss Grotto","description":"","act":"Act 3","prerequisites":[]},{"id":20,"name":"Moss Mother","type":"Boss","location":"Moss Grotto","description":"","act":"Act 1","prerequisites":[]},{"id":21,"name":"Summoned Saviour","type":"Boss","location":"Moss Grotto","description":"Steel Soul Mode only","act":"","prerequisites":[]},{"id":22,"name":"Pinstress","type":"Boss","location":"Mount Fay","description":"","act":"","prerequisites":[]},{"id":23,"name":"Crust King Khann","type":"Boss","location":"Sands of Karak","description":"","act":"Act 3","prerequisites":[]},{"id":24,"name":"Raging Conchfly","type":"Boss","location":"Sands of Karak","description":"","act":"Acts 2-3","prerequisites":[]},{"id":25,"name":"Voltvyrm","type":"Boss","location":"Sands of Karak","description":"","act":"Act 3","prerequisites":["Silk Soar"]},{"id":26,"name":"Watcher at the Edge","type":"Boss","location":"Sands of Karak","description":"","act":"Act 3","prerequisites":["Needolin"]},{"id":27,"name":"Nyleth","type":"Boss","location":"Shellwood","description":"","act":"Act 3","prerequisites":["Silk Soar"]},{"id":28,"name":"Seth","type":"Boss","location":"Shellwood","description":"","act":"Act 3","prerequisites":["Silk Soar"]},{"id":29,"name":"Sister Splinter","type":"Boss","location":"Shellwood","description":"","act":"Act 1","prerequisites":[]},{"id":30,"name":"Disgraced Chef Lugoli","type":"Boss","location":"Sinner's Road","description":"","act":"Act 2","prerequisites":["Clawline","Faydown Cloak"]},{"id":31,"name":"Lost Lace","type":"Boss","location":"The Abyss","description":"","act":"Act 3","prerequisites":[]},{"id":32,"name":"Grand Mother Silk","type":"Boss","location":"The Cradle","description":"","act":"Act 2","prerequisites":[]},{"id":33,"name":"Lace","type":"Boss","location":"The Cradle","description":"","act":"Acts 1-2","prerequisites":[]},{"id":34,"name":"Bell Beast","type":"Boss","location":"The Marrow","description":"","act":"Act 1","prerequisites":[]},{"id":35,"name":"Skarrgard","type":"Boss","location":"The Marrow","description":"","act":"Acts 1-3","prerequisites":[]},{"id":36,"name":"Skull Tyrant","type":"Boss","location":"The Marrow","description":"","act":"Act 1","prerequisites":[]},{"id":37,"name":"Broodmother","type":"Boss","location":"The Slab","description":"","act":"Act 2","prerequisites":[]},{"id":38,"name":"First Sinner","type":"Boss","location":"The Slab","description":"","act":"Acts 2-3","prerequisites":[]},{"id":39,"name":"Clover Dancers","type":"Boss","location":"Verdania","description":"","act":"Act 3","prerequisites":[]},{"id":40,"name":"Palestag","type":"Boss","location":"Verdania","description":"","act":"Act 3","prerequisites":[]},{"id":41,"name":"Garmond and Zaza","type":"Boss","location":"Whispering Vaults","description":"","act":"Acts 1-3","prerequisites":[]},{"id":42,"name":"Tormented Trobbio","type":"Boss","location":"Whispering Vaults","description":"","act":"Act 3","prerequisites":[]},{"id":43,"name":"Trobbio","type":"Boss","location":"Whispering Vaults","description":"","act":"Act 2","prerequisites":[]},{"id":44,"name":"Father of the Flame","type":"Boss","location":"Wisp Thicket","description":"","act":"Act 2","prerequisites":["Faydown Cloak"]},{"id":45,"name":"The Unravelled","type":"Boss","location":"Whiteward","description":"","act":"Act 2","prerequisites":["Clawline"]},{"id":46,"name":"Plasmified Zango","type":"Boss","location":"Wormways","description":"","act":"Act 3","prerequisites":[]},{"id":47,"name":"Rhinogrund","type":"Boss","location":"Far Fields","description":"","act":"Acts 1-2","prerequisites":[]},{"id":48,"name":"Choir Clapper","type":"Mini-Boss","location":"High Halls","description":"","act":"","prerequisites":[]},{"id":49,"name":"Craggler","type":"Mini-Boss","location":"Wormways","description":"","act":"","prerequisites":[]},{"id":50,"name":"Rhinogrund","type":"Mini-Boss","location":"Memorium","description":"","act":"Acts 1-2","prerequisites":[]},{"id":51,"name":"Skarrgard","type":"Mini-Boss","location":"The Marrow","description":"","act":"Acts 1-3","prerequisites":[]},{"id":52,"name":"Straight Pin","type":"Red Tool","location":"The Marrow","description":"Prison cell east of area","act":"Act 1","prerequisites":[]},{"id":53,"name":"Threefold Pin","type":"Red Tool","location":"Greymoor","description":"Guarded by Tallcraw in Craw Lake","act":"Act 1","prerequisites":[]},{"id":54,"name":"Sting Shard","type":"Red Tool","location":"Deep Docks","description":"Purchase from Forge Daughter (140 Rosaries + Craftmetal)","act":"Act 1","prerequisites":[]},{"id":55,"name":"Curveclaw","type":"Red Tool","location":"Hunter's March","description":"Buy from Mottled Skarr (140 Rosaries)","act":"Act 1","prerequisites":[]},{"id":56,"name":"Longpin","type":"Red Tool","location":"Bellhart","description":"Destroy Wood Wasp nest on right side","act":"Act 1","prerequisites":[]},{"id":57,"name":"Tacks","type":"Red Tool","location":"Sinner's Road","description":"Reward for Roach Guts wish","act":"Act 1","prerequisites":[]},{"id":58,"name":"Curvesickle","type":"Red Tool","location":"Far Fields","description":"Give Curveclaw to Skarr Scout (Act 3)","act":"Act 3","prerequisites":[]},{"id":59,"name":"Throwing Ring","type":"Red Tool","location":"Bilewater","description":"Complete Trail's End wish","act":"Act 1","prerequisites":[]},{"id":60,"name":"Pimpillo","type":"Red Tool","location":"Greymoor","description":"Requires Cling Grip, craft at table","act":"Act 1","prerequisites":["Cling Grip"]},{"id":61,"name":"Silkshot (Twelfth Architect)","type":"Red Tool","location":"Underworks","description":"Repair Ruined Tool (130 Rosaries + Craftmetal)","act":"Act 1","prerequisites":[]},{"id":62,"name":"Silkshot (Forge Daughter)","type":"Red Tool","location":"Deep Docks","description":"Repair Ruined Tool (240 Rosaries + Craftmetal)","act":"Act 1","prerequisites":[]},{"id":63,"name":"Conchcutter","type":"Red Tool","location":"Sands of Karak","description":"Coral Tower - end of east path","act":"Act 1","prerequisites":[]},{"id":64,"name":"Silkshot","type":"Red Tool","location":"Mount Fay","description":"Repair at peak (1 Craftmetal)","act":"Act 1","prerequisites":[]},{"id":65,"name":"Delver's Drill","type":"Red Tool","location":"Underworks","description":"Hazardous tunnel near bench","act":"Act 1","prerequisites":[]},{"id":66,"name":"Cogwork Wheel","type":"Red Tool","location":"Cogwork Core","description":"Buy from Twelfth Architect (360 Rosaries + Craftmetal)","act":"Act 1","prerequisites":[]},{"id":67,"name":"Snare Setter","type":"Red Tool","location":"Moss Grotto","description":"Secret room (requires Faydown Cloak, Cling Grip)","act":"Act 1","prerequisites":["Faydown Cloak","Cling Grip"]},{"id":68,"name":"Flintslate","type":"Red Tool","location":"Deep Docks","description":"Passage east of Forge Daughter","act":"Act 1","prerequisites":[]},{"id":69,"name":"Cogfly","type":"Red Tool","location":"High Halls","description":"Craft at table (1 Craftmetal)","act":"Act 1","prerequisites":[]},{"id":70,"name":"Needle Phial","type":"Red Tool","location":"Wormways","description":"From Alchemist Zylotol quest","act":"Act 1","prerequisites":[]},{"id":71,"name":"Flea Brew","type":"Red Tool","location":"Greymoor","description":"Reward from Grishkin (Lost Fleas quest)","act":"Act 1","prerequisites":[]},{"id":72,"name":"Plasmium Phial","type":"Red Tool","location":"Wormways","description":"Complete Alchemist's Assistant wish","act":"Act 1","prerequisites":[]},{"id":73,"name":"Voltvessels","type":"Red Tool","location":"Memorium","description":"Secret room with colored glass","act":"Act 1","prerequisites":[]},{"id":74,"name":"Rosary Cannon","type":"Red Tool","location":"High Halls","description":"Destroy ceiling lever","act":"Act 1","prerequisites":[]},{"id":75,"name":"Druid's Eye","type":"Blue Tool","location":"Mosshome","description":"Complete Berry Picking quest","act":"Act 1","prerequisites":[]},{"id":76,"name":"Druid's Eyes","type":"Blue Tool","location":"Mosshome","description":"Give 4 more Mossberries to Moss Druid","act":"Act 1","prerequisites":[]},{"id":77,"name":"Magma Bell","type":"Blue Tool","location":"Deep Docks","description":"Buy from Forge Daughter (110 Rosaries + Craftmetal)","act":"Act 1","prerequisites":[]},{"id":78,"name":"Fractured Mask","type":"Blue Tool","location":"Hunter's March","description":"Buy from Mottled Skarr (260 Rosaries)","act":"Act 1","prerequisites":[]},{"id":79,"name":"Pollip Pouch","type":"Blue Tool","location":"Shellwood","description":"Complete Rite of the Pollip quest","act":"Act 1","prerequisites":[]},{"id":80,"name":"Warding Bell","type":"Blue Tool","location":"Far Fields","description":"Secret passage (requires Drifter's Cloak)","act":"Act 1","prerequisites":["Drifter's Cloak"]},{"id":81,"name":"Multibinder","type":"Blue Tool","location":"Bellhart","description":"Buy from Frey (880 Rosaries, Act 2+)","act":"Act 1","prerequisites":[]},{"id":82,"name":"Weavelight","type":"Blue Tool","location":"Weavenest Atla","description":"Drops after defeating Moss Mother","act":"Act 1","prerequisites":[]},{"id":83,"name":"Sawtooth Circlet","type":"Blue Tool","location":"Underworks","description":"Buy from Twelfth Architect (230 Rosaries)","act":"Act 1","prerequisites":[]},{"id":84,"name":"Reserve Bind","type":"Blue Tool","location":"High Halls","description":"Defeat Second Sentinel","act":"Act 1","prerequisites":[]},{"id":85,"name":"Spool Extender","type":"Blue Tool","location":"Choral Chambers","description":"Buy from Jubilana (720 Rosaries)","act":"Act 1","prerequisites":[]},{"id":86,"name":"Injector Band","type":"Blue Tool","location":"Whiteward","description":"Found on shelf near Sherma","act":"Act 1","prerequisites":[]},{"id":87,"name":"Claw Mirror","type":"Blue Tool","location":"Whispering Vaults","description":"Defeat Trobbio at The Stage","act":"Act 1","prerequisites":[]},{"id":88,"name":"Claw Mirrors","type":"Blue Tool","location":"Whispering Vaults","description":"Combine Claw Mirror + Dark Mirror (Act 3)","act":"Act 3","prerequisites":[]},{"id":89,"name":"Memory Crystal","type":"Blue Tool","location":"Mount Fay","description":"Break ice shards, find in wide room","act":"Act 1","prerequisites":[]},{"id":90,"name":"Quick Sling","type":"Blue Tool","location":"Bilewater","description":"Secret area above Shakra's room","act":"Act 1","prerequisites":[]},{"id":91,"name":"Volt Filament","type":"Blue Tool","location":"Sands of Karak","description":"Defeat Voltvyrm boss","act":"Act 1","prerequisites":["Silk Soar","Cling Grip"]},{"id":92,"name":"Snitch Pick","type":"Blue Tool","location":"Blasted Steps","description":"Buy from Grindle (740 Rosaries, Act 3)","act":"Act 3","prerequisites":[]},{"id":93,"name":"Wreath of Purity","type":"Blue Tool","location":"Putrified Ducts","description":"Hidden passage east section","act":"Act 1","prerequisites":[]},{"id":94,"name":"Longclaw","type":"Blue Tool","location":"Bilewater","description":"Complete Broodfeast wish in Putrified Ducts","act":"Act 1","prerequisites":[]},{"id":95,"name":"Wispfire Lantern","type":"Blue Tool","location":"Underworks","description":"Defeat Father of Flame boss","act":"Act 1","prerequisites":[]},{"id":96,"name":"Pin Badge","type":"Blue Tool","location":"Mount Fay","description":"Defeat Pinstress boss","act":"Act 1","prerequisites":[]},{"id":97,"name":"Egg of Flealia","type":"Blue Tool","location":"Fleatopia","description":"Collect all 29 Lost Fleas","act":"Act 1","prerequisites":[]},{"id":98,"name":"Compass","type":"Yellow Tool","location":"The Marrow","description":"Buy from Shakra (70 Rosaries)","act":"Act 1","prerequisites":[]},{"id":99,"name":"Shard Pendant","type":"Yellow Tool","location":"The Marrow","description":"Room left of collapsing platforms","act":"Act 1","prerequisites":[]},{"id":100,"name":"Magnetite Brooch","type":"Yellow Tool","location":"Bone Bottom","description":"Buy from Pebb (120 Rosaries)","act":"Act 1","prerequisites":[]},{"id":101,"name":"Dead Bug's Purse","type":"Yellow Tool","location":"Wormways","description":"Found in dead bug body","act":"Act 1","prerequisites":[]},{"id":102,"name":"Barbed Bracelet","type":"Yellow Tool","location":"Sinner's Road","description":"Lowest section, southeast platform","act":"Act 1","prerequisites":[]},{"id":103,"name":"Weighted Belt","type":"Yellow Tool","location":"Far Fields","description":"Buy from Mort (160 Rosaries, Pilgrim's Rest)","act":"Act 1","prerequisites":[]},{"id":104,"name":"Shell Satchel","type":"Yellow Tool","location":"Bellhart","description":"Buy from Frey (520 Rosaries)","act":"","prerequisites":[]},{"id":105,"name":"Magnetite Dice","type":"Yellow Tool","location":"Bone Bottom","description":"Buy from Pebb (80 Rosaries)","act":"","prerequisites":[]},{"id":106,"name":"Scuttlebrace","type":"Yellow Tool","location":"Wormways","description":"Purchase location","act":"","prerequisites":[]},{"id":107,"name":"Silkspeed Anklets","type":"Yellow Tool","location":"The Marrow","description":"Purchase from Shakra","act":"","prerequisites":[]},{"id":108,"name":"Spider Strings","type":"Yellow Tool","location":"Greymoor","description":"Location unlocked later","act":"","prerequisites":["Needolin"]},{"id":109,"name":"Ascendant's Grip","type":"Yellow Tool","location":"Shellwood","description":"Purchase from merchant","act":"","prerequisites":[]},{"id":110,"name":"Thief's Mark","type":"Yellow Tool","location":"Sinner's Road","description":"Purchase location","act":"","prerequisites":[]},{"id":111,"name":"Silkspear","type":"Silk Skill","location":"Mosshome","description":"Top of large room outside Moss Druid cave","act":"","prerequisites":[]},{"id":112,"name":"Thread Storm","type":"Silk Skill","location":"Greymoor","description":"Halfway Home area - ascend chains with balloons","act":"","prerequisites":[]},{"id":113,"name":"Cross Stitch","type":"Silk Skill","location":"Exhaust Organ","description":"Defeat Phantom boss","act":"","prerequisites":[]},{"id":114,"name":"Sharpdart","type":"Silk Skill","location":"Wormways","description":"Requires Needolin and Clawline","act":"","prerequisites":["Needolin","Clawline"]},{"id":115,"name":"Rune Rage","type":"Silk Skill","location":"The Slab","description":"Defeat First Sinner","act":"","prerequisites":[]},{"id":116,"name":"Pale Nails","type":"Silk Skill","location":"The Cradle","description":"Defeat Grand Mother Silk, bind her arm (Act 3)","act":"Act 3","prerequisites":["Silk Soar"]},{"id":117,"name":"Reaper Crest","type":"Crest","location":"Greymoor","description":"Chapel of the Reaper - far left section","act":"","prerequisites":[]},{"id":118,"name":"Wanderer Crest","type":"Crest","location":"Far Fields","description":"Chapel of the Wanderer","act":"","prerequisites":[]},{"id":119,"name":"Beast Crest","type":"Crest","location":"Hunter's March","description":"Chapel of the Beast","act":"","prerequisites":[]},{"id":120,"name":"Witch Crest","type":"Crest","location":"Greymoor","description":"Chapel of the Witch","act":"Act 2","prerequisites":["Clawline"]},{"id":121,"name":"Architect Crest","type":"Crest","location":"Underworks","description":"Chapel of the Architect","act":"","prerequisites":[]},{"id":122,"name":"Shaman Crest","type":"Crest","location":"Moss Grotto","description":"Ruined Chapel - break through walls","act":"Act 3","prerequisites":["Silk Soar"]},{"id":123,"name":"Lost Flea #1","type":"Lost Flea","location":"The Marrow","description":"Top of vertical chamber after accepting quest","act":"","prerequisites":[]},{"id":124,"name":"Lost Flea #2","type":"Lost Flea","location":"Hunter's March","description":"Vertical section with red bud flowers","act":"","prerequisites":[]},{"id":125,"name":"Lost Flea #3","type":"Lost Flea","location":"Deep Docks","description":"Secret chamber with lava","act":"","prerequisites":[]},{"id":126,"name":"Lost Flea #4","type":"Lost Flea","location":"Deep Docks","description":"Northeast of first bench","act":"","prerequisites":["Swift Step","Drifter's Cloak"]},{"id":127,"name":"Lost Flea #5","type":"Lost Flea","location":"Deep Docks","description":"Requires Clawline","act":"","prerequisites":["Clawline","Cling Grip","Swift Step"]},{"id":128,"name":"Lost Flea #6","type":"Lost Flea","location":"Far Fields","description":"Behind cracked wall in secret room","act":"","prerequisites":[]},{"id":129,"name":"Lost Flea #7","type":"Lost Flea","location":"Far Fields","description":"Requires Drifter's Cloak and Cling Grip","act":"","prerequisites":["Drifter's Cloak","Cling Grip"]},{"id":130,"name":"Lost Flea #8","type":"Lost Flea","location":"Craw Lake","description":"Narrow platforms in upper right area","act":"","prerequisites":[]},{"id":131,"name":"Lost Flea #9","type":"Lost Flea","location":"Greymoor","description":"Top of tower in observation niche","act":"","prerequisites":[]},{"id":132,"name":"Lost Flea #10","type":"Lost Flea","location":"Bellhart","description":"Behind cracked wall via bouncing off blue bells","act":"","prerequisites":[]},{"id":133,"name":"Lost Flea #11","type":"Lost Flea","location":"Bilewater","description":"Hidden area in Exhaust Organ","act":"","prerequisites":["Cling Grip","Drifter's Cloak","Swift Step"]},{"id":134,"name":"Lost Flea #12","type":"Lost Flea","location":"Blasted Steps","description":"On ledge beside stone pillar (requires Faydown Cloak)","act":"","prerequisites":["Faydown Cloak"]},{"id":135,"name":"Lost Flea #13","type":"Lost Flea","location":"Choral Chambers","description":"Citadel area, requires multiple abilities","act":"","prerequisites":["Cling Grip","Faydown Cloak","Drifter's Cloak","Swift Step"]},{"id":136,"name":"Lost Flea #14","type":"Lost Flea","location":"Choral Chambers","description":"Citadel area, second location","act":"","prerequisites":["Drifter's Cloak"]},{"id":137,"name":"Lost Flea #15","type":"Lost Flea","location":"Memorium","description":"Huge Flea requiring combat at top","act":"","prerequisites":["Faydown Cloak","Cling Grip","Swift Step","Drifter's Cloak","Clawline"]},{"id":138,"name":"Lost Flea #16","type":"Lost Flea","location":"Mount Fay","description":"Accessible by climbing left wall","act":"","prerequisites":[]},{"id":139,"name":"Lost Flea #17","type":"Lost Flea","location":"Sands of Karak","description":"After parkour sequences and enemies","act":"","prerequisites":[]},{"id":140,"name":"Lost Flea #18","type":"Lost Flea","location":"Shellwood","description":"Trapped in vines at far bottom-right","act":"","prerequisites":["Faydown Cloak","Drifter's Cloak","Cling Grip"]},{"id":141,"name":"Lost Flea #19","type":"Lost Flea","location":"Sinner's Road","description":"Behind hanging cages in secret path","act":"","prerequisites":[]},{"id":142,"name":"Lost Flea #20","type":"Lost Flea","location":"Songclave","description":"Through Whispering Vaults, complex platforming","act":"","prerequisites":["Clawline"]},{"id":143,"name":"Lost Flea #21","type":"Lost Flea","location":"The Slab","description":"In round entrance","act":"","prerequisites":[]},{"id":144,"name":"Lost Flea #22","type":"Lost Flea","location":"The Slab","description":"Near Bellway Bench","act":"","prerequisites":["Cling Grip"]},{"id":145,"name":"Lost Flea #23","type":"Lost Flea","location":"Underworks","description":"The Cauldron area, lava floor platform","act":"","prerequisites":[]},{"id":146,"name":"Lost Flea #24","type":"Lost Flea","location":"Whispering Vaults","description":"Requires manipulating moving cube platforms","act":"","prerequisites":["Clawline","Cling Grip","Faydown Cloak","Swift Step"]},{"id":147,"name":"Lost Flea #25","type":"Lost Flea","location":"Wisp Thicket","description":"Trapped in cement at peak, multiple abilities","act":"","prerequisites":["Clawline","Faydown Cloak","Cling Grip"]},{"id":148,"name":"Lost Flea #26","type":"Lost Flea","location":"Wormways","description":"Requires breaking wall and defeating enemy","act":"","prerequisites":["Clawline","Drifter's Cloak","Faydown Cloak","Cling Grip"]},{"id":149,"name":"Lost Flea #27","type":"Lost Flea","location":"Putrified Ducts","description":"Vog in Pale Lake, requires vine climbing","act":"","prerequisites":["Clawline","Cling Grip","Faydown Cloak"]},{"id":150,"name":"Lost Flea #28","type":"Lost Flea","location":"Bilewater","description":"Additional location in area","act":"","prerequisites":[]},{"id":151,"name":"Lost Flea #29","type":"Lost Flea","location":"Bilewater","description":"Additional location in area","act":"","prerequisites":[]},{"id":152,"name":"Mister Mushroom #1","type":"Mister Mushroom","location":"Moss Grotto","description":"Initial location, start Passing of the Age quest","act":"","prerequisites":["Needolin"]},{"id":153,"name":"Mister Mushroom #2","type":"Mister Mushroom","location":"Bone Bottom","description":"Requires Needolin to draw out","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]},{"id":154,"name":"Mister Mushroom #3","type":"Mister Mushroom","location":"Far Fields","description":"Requires Needolin to draw out","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]},{"id":155,"name":"Mister Mushroom #4","type":"Mister Mushroom","location":"Greymoor","description":"Requires Needolin to draw out","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]},{"id":156,"name":"Mister Mushroom #5","type":"Mister Mushroom","location":"The Slab","description":"Requires Needolin to draw out","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]},{"id":157,"name":"Mister Mushroom #6","type":"Mister Mushroom","location":"Mount Fay","description":"Requires Silk Soar, Cling Grip, Clawline","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]},{"id":158,"name":"Mister Mushroom #7","type":"Mister Mushroom","location":"The Cradle","description":"Requires Silk Soar, Cling Grip, Clawline","act":"","prerequisites":["Silk Soar","Cling Grip","Clawline","Needolin"]}],
+                loading: false,
 
                 init() {
                     this.loadFromLocalStorage();
+                },
+
+                get uniqueActs() {
+                    const acts = [...new Set(this.items.map(item => item.act).filter(act => act))];
+                    return acts.sort();
+                },
+
+                get uniquePrerequisites() {
+                    const prereqs = new Set();
+                    this.items.forEach(item => {
+                        if (item.prerequisites) {
+                            item.prerequisites.forEach(p => prereqs.add(p));
+                        }
+                    });
+                    return [...prereqs].sort();
                 },
 
                 get filteredItems() {
@@ -503,6 +405,23 @@
                     // Location filter
                     if (this.filterLocation) {
                         filtered = filtered.filter(item => item.location === this.filterLocation);
+                    }
+
+                    // Act filter
+                    if (this.filterAct) {
+                        filtered = filtered.filter(item => item.act === this.filterAct);
+                    }
+
+                    // Prerequisites filter - show items you can complete with selected abilities
+                    if (this.filterPrerequisites.length > 0) {
+                        filtered = filtered.filter(item => {
+                            // Items with no prerequisites can always be completed
+                            if (!item.prerequisites || item.prerequisites.length === 0) {
+                                return true;
+                            }
+                            // Check if all of the item's prerequisites are in the selected abilities
+                            return item.prerequisites.every(prereq => this.filterPrerequisites.includes(prereq));
+                        });
                     }
 
                     // Hide completed filter
@@ -571,9 +490,42 @@
                 },
 
                 getWikiUrl(item) {
-                    const baseName = item.name.replace(/#\d+/, '').trim();
-                    const encoded = encodeURIComponent(baseName.replace(/ /g, '_'));
-                    return `https://hollowknight.wiki/w/Hollow_Knight:_Silksong#${encoded}`;
+                    // Lost Fleas all go to the collective Flea page
+                    if (item.type === 'Lost Flea') {
+                        return 'https://hollowknight.wiki/w/Flea';
+                    }
+
+                    // Mister Mushroom locations all go to the Mister Mushroom (Silksong) page
+                    if (item.type === 'Mister Mushroom') {
+                        return 'https://hollowknight.wiki/w/Mister_Mushroom_(Silksong)';
+                    }
+
+                    // For all other items, create individual page URLs
+                    // Remove any "#N" suffixes (e.g., "Lost Flea #1" -> "Lost Flea")
+                    let pageName = item.name.replace(/#\d+/, '').trim();
+
+                    // Remove parenthetical suffixes (e.g., "Silkshot (Twelfth Architect)" -> "Silkshot")
+                    pageName = pageName.replace(/\s*\([^)]+\)\s*/, '').trim();
+
+                    // Convert to proper title case for wiki URLs
+                    // Articles and prepositions should be lowercase when not at the start
+                    const words = pageName.split(' ');
+                    const lowercaseWords = ['the', 'of', 'and', 'at', 'in', 'to', 'a', 'an'];
+
+                    pageName = words.map((word, index) => {
+                        // Keep first word capitalized regardless
+                        if (index === 0) return word;
+
+                        // Lowercase articles and prepositions in the middle
+                        if (lowercaseWords.includes(word.toLowerCase())) {
+                            return word.toLowerCase();
+                        }
+
+                        return word;
+                    }).join('_');
+
+                    // Return the wiki URL
+                    return `https://hollowknight.wiki/w/${pageName}`;
                 },
 
                 getMapUrl(item) {
@@ -762,23 +714,48 @@
                 },
 
                 saveToLocalStorage() {
-                    const completionState = this.items.map(item => ({
-                        id: item.id,
-                        completed: item.completed
-                    }));
-                    localStorage.setItem('silksongChecklist', JSON.stringify(completionState));
+                    const state = {
+                        items: this.items.map(item => ({
+                            id: item.id,
+                            completed: item.completed
+                        })),
+                        filterPrerequisites: this.filterPrerequisites
+                    };
+                    localStorage.setItem('silksongChecklist', JSON.stringify(state));
                 },
 
                 loadFromLocalStorage() {
                     const saved = localStorage.getItem('silksongChecklist');
                     if (saved) {
-                        const completionState = JSON.parse(saved);
-                        completionState.forEach(savedItem => {
-                            const item = this.items.find(i => i.id === savedItem.id);
-                            if (item) {
-                                item.completed = savedItem.completed;
+                        try {
+                            const state = JSON.parse(saved);
+
+                            // Handle both old format (array) and new format (object)
+                            if (Array.isArray(state)) {
+                                // Old format - just completion data
+                                state.forEach(savedItem => {
+                                    const item = this.items.find(i => i.id === savedItem.id);
+                                    if (item) {
+                                        item.completed = savedItem.completed;
+                                    }
+                                });
+                            } else {
+                                // New format - has items and filterPrerequisites
+                                if (state.items) {
+                                    state.items.forEach(savedItem => {
+                                        const item = this.items.find(i => i.id === savedItem.id);
+                                        if (item) {
+                                            item.completed = savedItem.completed;
+                                        }
+                                    });
+                                }
+                                if (state.filterPrerequisites) {
+                                    this.filterPrerequisites = state.filterPrerequisites;
+                                }
                             }
-                        });
+                        } catch (error) {
+                            console.error('Error loading from localStorage:', error);
+                        }
                     }
                 },
 
