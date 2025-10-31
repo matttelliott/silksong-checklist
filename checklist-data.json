@@ -957,10 +957,13 @@
     "id": 107,
     "name": "Silkspeed Anklets",
     "type": "Yellow Tool",
-    "location": "The Marrow",
-    "description": "Purchase from Shakra",
+    "location": "Weavenest Cindril",
+    "description": "Sprint past all light pillars without stopping",
     "act": "",
-    "prerequisites": []
+    "prerequisites": [
+      "Needolin",
+      "Swift Step"
+    ]
   },
   {
     "id": 108,
